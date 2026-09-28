@@ -58,3 +58,27 @@ export const sendMessage = async (idInstance, apiTokenInstance, chatId, message)
         throw err;
     }
 }
+
+export const checkAccountWithNumber = async (idInstance, apiTokenInstance, phoneNumber) => {
+    const url = `${API_URL}/waInstance${idInstance}/checkAccount/${apiTokenInstance}`;
+
+    const bodyQuery = {
+        phoneNumber: Number(phoneNumber),
+    }
+
+    try {
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(bodyQuery),
+        })
+
+        return await response.json();
+    } catch(err) {
+        console.error(`Ошибка проверки ID аккаунта по номеру: ${err}`);
+        throw err;
+    }
+
+}

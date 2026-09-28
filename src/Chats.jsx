@@ -1,7 +1,7 @@
 import './App.scss'
 import {useState, useRef} from "react";
 import timestampCreate from "./utils/formatTimestamp.js";
-import {sendMessage} from "./api/greenApi";
+import {sendMessage, checkAccountWithNumber} from "./api/greenApi";
 import {useNotifications} from "./hooks/useNotifications.js";
 import ChatList from "./components/ChatList/ChatList.jsx";
 import ChatWindow from "./components/ChatWindow/ChatWindow.jsx";
@@ -58,12 +58,19 @@ export default function Chats({idInstance, apiTokenInstance}) {
     }
 
 
-    const createChatByPhone = () => {
+    const createChatByPhone = async () => {
         if(!phone.trim()) return;
 
         const cleanPhone = phone.replace(/\D/g, "");
 
-        const chatId = `${cleanPhone}@c.us`;
+        const phoneFindResult = await checkAccountWithNumber(idInstance, apiTokenInstance, cleanPhone);
+
+        if (!phoneFindResult?.exist || !phoneFindResult?.chatId) {
+            alert("Аккаунта в MAX на этот номер нет!");
+            return;
+        }
+
+        const chatId = await phoneFindResult.chatId;
 
         const chatExists = chats.find(chat => chat.chatId === chatId);
 
